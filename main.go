@@ -93,8 +93,7 @@ func main() {
 		if needLogin {
 			err := task.login42Paris()
 			if err != nil {
-				log.Println(err)
-				time.Sleep(3 * time.Second)
+				task.defaultSleep(err)
 				continue
 			}
 		}
@@ -126,14 +125,13 @@ func main() {
 		
 		resp, err := client.Do(&req)
 		if err != nil {
-		
+			task.defaultSleep(err)
 		}
 		
 		body, _ := io.ReadAll(resp.Body)
 		
 		if resp.StatusCode != 200 {
-			log.Printf("ERR Unknown Fetching Piscine Availability [%v]", resp.Status)
-			time.Sleep(3 * time.Second)
+			task.defaultSleep(fmt.Sprintf("ERR Unknown Fetching Piscine Availability [%v]", resp.Status))
 			continue
 		} else if strings.Contains(string(body), "42 Paris | Connexion") {
 			needLogin = true
@@ -170,7 +168,7 @@ func main() {
 		
 	}
 	
-	task.safeExit(nil)
+	task.safeExit("Process Ending...")
 }
 
 func (t *User) login42Paris() (err error) {
@@ -362,3 +360,9 @@ func (t *User) safeExit(msg any) {
 	time.Sleep(time.Duration(t.DefaultSleep) * time.Second)
 	os.Exit(0)
 }
+
+func (t *User) defaultSleep(msg any) {
+	log.Println(msg)
+	time.Sleep(time.Duration(t.DefaultSleep) * time.Second)
+}
+
