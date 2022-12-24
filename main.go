@@ -202,17 +202,15 @@ func (t *User) login42Paris() (err error) {
 		return err
 	}
 	
-	if resp.StatusCode != 302 {
-		return fmt.Errorf("ERR While Getting AdmissionsSessionProduction Cookie [%v]", resp.Status)
-	}
+	log.Println(resp.Cookies())
 	
-	for _, v := range resp.Cookies() {
-		if v.Name == "_admissions_session_production" {
-			t.Cookies.AdmissionsSessionProduction = v.Value
+	cookies := resp.Cookies()
+	for _, c := range cookies {
+		if c.Name == "_admissions_session_production" {
+			t.Cookies.AdmissionsSessionProduction = c.Value
 			log.Println("Got AdmissionsSessionProduction Cookie")
-		} else {
-			return unableGetCookies
 		}
+		
 	}
 	
 	resp.Body.Close()
@@ -365,4 +363,3 @@ func (t *User) defaultSleep(msg any) {
 	log.Println(msg)
 	time.Sleep(time.Duration(t.DefaultSleep) * time.Second)
 }
-
