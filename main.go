@@ -202,8 +202,6 @@ func (t *User) login42Paris() (err error) {
 		return err
 	}
 	
-	log.Println(resp.Cookies())
-	
 	cookies := resp.Cookies()
 	for _, c := range cookies {
 		if c.Name == "_admissions_session_production" {
@@ -302,13 +300,14 @@ func (t *User) login42Paris() (err error) {
 		return err
 	}
 	
-	if resp.StatusCode != 302 {
-		return invalidCredentials
-	}
-	
 	resp.Body.Close()
 	
-	log.Println("Logged In!")
+	switch resp.StatusCode {
+	case 200, 302:
+		log.Println("Logged In!")
+	default:
+		return fmt.Errorf("ERR Logging In [%v]", resp.Status)
+	}
 	
 	return nil
 }
